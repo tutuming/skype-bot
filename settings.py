@@ -1,4 +1,5 @@
-# Django settings for ebinasan project.
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -143,3 +144,5 @@ LOGGING = {
         },
     }
 }
+
+EBINASAN_BOOKMARKED_CHAT_NAME = u'開発メンバー全員集合'

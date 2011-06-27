@@ -4,6 +4,7 @@ import time
 import feedparser
 import sgmllib
 from django.core.management.base import BaseCommand
+from django.conf import settings
 from ebinasan import models
 
 import re
@@ -33,7 +34,11 @@ def stripHTML(t):
 
 class Command(BaseCommand):
     def init_chat(self):
-        self.chat = self.skype.CreateChatWith("echo123")
+        for bookmarkedChat in self.skype.BookmarkedChats:
+            if bookmarkedChat.Topic == settings.EBINASAN_BOOKMARKED_CHAT_NAME:
+                self.chat = bookmarkedChat
+                return
+        raise RuntimeError(u'no bookmaedked chat named "{0}"'.format(settings.EBINASAN_BOOKMARKED_CHAT_NAME))
 
     def say(self, msg):
         self.chat.SendMessage(msg)
@@ -43,18 +48,20 @@ class Command(BaseCommand):
         self.skype = Skype4Py.Skype()
         self.skype.Attach()
         self.init_chat()
-        self.say(u'海老名なう')
+        self.say(u'(dance) 海老名なう(ninja)')
 
         self.run_feed_loop(30)
 
     def run_feed_loop(self, interval = 30):
         while True:
             feeds = self.get_feeds()
-            if feeds:
+            plural = len(feeds) > 1
+            if feeds and plural:
                 self.say(u'★{0}件 更新のお知らせがございます'. format(len(feeds)))
             for i, feed in enumerate(feeds):
                 msg = u'{0} - \n{1}\n詳しくはコチラ : {2}'.format(feed['title'],  feed['desc'], feed['url'])
-                self.say(u'--- {0} 件目 : {1}'.format(i + 1, feed['feed_title']))
+                if plural:
+                    self.say(u'--- {0} 件目 : {1}'.format(i + 1, feed['feed_title']))
                 self.say(msg)
 
             time.sleep(interval) 
