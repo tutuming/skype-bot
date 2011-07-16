@@ -86,9 +86,9 @@ class Command(BaseCommand):
                 entry_dict = {}
                 entry_dict['title'] = entry.title
                 entry_dict['url'] = entry.link
-                if entry.haskey('content'):
+                if entry.has_key('content'):
                     entry_dict['desc'] = stripper.strip(entry.content[0].value)
-                elif entry.haskey('summary_detail'):
+                elif entry.has_key('summary_detail'):
                     entry_dict['desc'] = stripper.strip(entry.summary_detail.value)
                 else:
                     entry_dict['desc'] = ''
