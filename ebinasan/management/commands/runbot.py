@@ -34,11 +34,14 @@ def stripHTML(t):
 
 class Command(BaseCommand):
     def init_chat(self):
-        for bookmarkedChat in self.skype.BookmarkedChats:
-            if bookmarkedChat.Topic == settings.EBINASAN_BOOKMARKED_CHAT_NAME:
-                self.chat = bookmarkedChat
-                return
-        raise RuntimeError(u'no bookmaedked chat named "{0}"'.format(settings.EBINASAN_BOOKMARKED_CHAT_NAME))
+        if settings.DEBUG:
+            self.chat = self.skype.CreateChatWith("echo123")
+        else:
+            for bookmarkedChat in self.skype.BookmarkedChats:
+                if bookmarkedChat.Topic == settings.EBINASAN_BOOKMARKED_CHAT_NAME:
+                    self.chat = bookmarkedChat
+                    return
+                raise RuntimeError(u'no bookmaedked chat named "{0}"'.format(settings.EBINASAN_BOOKMARKED_CHAT_NAME))
 
     def say(self, msg):
         self.chat.SendMessage(msg)
@@ -83,11 +86,16 @@ class Command(BaseCommand):
                 entry_dict = {}
                 entry_dict['title'] = entry.title
                 entry_dict['url'] = entry.link
-                entry_dict['desc'] = stripper.strip(entry.content[0].value)
+                if entry.haskey('content'):
+                    entry_dict['desc'] = stripper.strip(entry.content[0].value)
+                elif entry.haskey('summary_detail'):
+                    entry_dict['desc'] = stripper.strip(entry.summary_detail.value)
+                else:
+                    entry_dict['desc'] = ''
                 entry_dict['feed_title'] = d.feed.title
                 
                 ret.append(entry_dict)
             feed.save()
         ret.reverse()
-
+        
         return ret
