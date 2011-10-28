@@ -60,7 +60,7 @@ class Command(BaseCommand):
 
     def onMessageStatus(self, msg, event):
         if event == u'RECEIVED':
-            if msg.find(u'海老名さん') != -1:
+            if msg.Body.find(u'海老名さん') != -1:
                 self.say(u'へいへい、いますよいますよ(ninja)(ninja)(ninja)');
 
     def run_feed_loop(self, interval = 30):
