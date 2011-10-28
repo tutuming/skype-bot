@@ -50,10 +50,18 @@ class Command(BaseCommand):
         import Skype4Py
         self.skype = Skype4Py.Skype()
         self.skype.Attach()
+
+        self.skype.OnMessageStatus = self.onMessageStatus
+        
         self.init_chat()
         self.say(u'(dance) 海老名なう(ninja)')
 
         self.run_feed_loop(30)
+
+    def onMessageStatus(self, msg, event):
+        if event == u'RECEIVED':
+            if msg.find(u'海老名さん') != -1:
+                self.say(u'へいへい、いますよいますよ(ninja)(ninja)(ninja)');
 
     def run_feed_loop(self, interval = 30):
         while True:
